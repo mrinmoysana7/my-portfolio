@@ -8,6 +8,7 @@ import {
   Palette,
   Sparkles,
   Thunderbolt,
+  ChevronDown,
 } from "@gravity-ui/icons";
 
 const skillCategories = [
@@ -20,6 +21,8 @@ const skillCategories = [
     glowColor: "bg-cyan-500/15",
     borderHover: "hover:border-cyan-500/50",
     iconBox: "bg-cyan-500/10 text-cyan-400 border-cyan-500/25",
+    expandBtnHover:
+      "hover:border-cyan-500/40 hover:bg-cyan-500/10 text-cyan-300",
     badgeHover:
       "hover:border-cyan-400/60 hover:bg-cyan-500/10 hover:text-cyan-200 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)]",
     checkColor: "text-cyan-400",
@@ -54,6 +57,8 @@ const skillCategories = [
     glowColor: "bg-purple-500/15",
     borderHover: "hover:border-purple-500/50",
     iconBox: "bg-purple-500/10 text-purple-400 border-purple-500/25",
+    expandBtnHover:
+      "hover:border-purple-500/40 hover:bg-purple-500/10 text-purple-300",
     badgeHover:
       "hover:border-purple-400/60 hover:bg-purple-500/10 hover:text-purple-200 hover:shadow-[0_0_15px_rgba(192,132,252,0.2)]",
     checkColor: "text-purple-400",
@@ -85,6 +90,8 @@ const skillCategories = [
     glowColor: "bg-emerald-500/15",
     borderHover: "hover:border-emerald-500/50",
     iconBox: "bg-emerald-500/10 text-emerald-400 border-emerald-500/25",
+    expandBtnHover:
+      "hover:border-emerald-500/40 hover:bg-emerald-500/10 text-emerald-300",
     badgeHover:
       "hover:border-emerald-400/60 hover:bg-emerald-500/10 hover:text-emerald-200 hover:shadow-[0_0_15px_rgba(52,211,153,0.2)]",
     checkColor: "text-emerald-400",
@@ -131,6 +138,15 @@ const marqueeItems = [
 
 export default function Skills() {
   const [activeTab, setActiveTab] = useState("all");
+  // কোন কোন কার্ডের কিওয়ার্ড এক্সপ্যান্ড করা আছে তা ট্র্যাক করার স্টেট (ডিফল্টভাবে সব বন্ধ থাকবে)
+  const [expandedCards, setExpandedCards] = useState({});
+
+  const toggleExpand = (id) => {
+    setExpandedCards((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   const filteredCategories =
     activeTab === "all"
@@ -206,7 +222,7 @@ export default function Skills() {
         {/* Skill Cards Grid */}
         <motion.div
           layout
-          className={`grid grid-cols-1 gap-8 ${activeTab === "all"
+          className={`grid grid-cols-1 gap-8 items-start ${activeTab === "all"
             ? "lg:grid-cols-3"
             : "max-w-2xl mx-auto lg:grid-cols-1"
             }`}
@@ -214,6 +230,8 @@ export default function Skills() {
           <AnimatePresence mode="popLayout">
             {filteredCategories.map((category, idx) => {
               const CategoryIcon = category.icon;
+              const isExpanded = !!expandedCards[category.id];
+
               return (
                 <motion.div
                   layout
@@ -222,7 +240,6 @@ export default function Skills() {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.92, y: -20 }}
                   transition={{ duration: 0.4, delay: idx * 0.1 }}
-                  whileHover={{ y: -6 }}
                   className={`relative p-7 rounded-3xl bg-slate-950/90 backdrop-blur-xl border border-slate-800/90 ${category.borderHover} transition-all duration-300 flex flex-col justify-between overflow-hidden group shadow-xl`}
                 >
                   {/* Top Gradient Accent Bar */}
@@ -260,9 +277,11 @@ export default function Skills() {
                     </div>
 
                     {/* Animated Core Proficiency Bars */}
-                    <div className="mb-6 p-4 rounded-2xl bg-slate-900/60 border border-slate-800/70 space-y-3.5">
+                    <div className="mb-5 p-4 rounded-2xl bg-slate-900/60 border border-slate-800/70 space-y-3.5">
                       <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 mb-1">
-                        <Thunderbolt className={`w-3.5 h-3.5 ${category.checkColor}`} />
+                        <Thunderbolt
+                          className={`w-3.5 h-3.5 ${category.checkColor}`}
+                        />
                         <span>Core Proficiency</span>
                       </div>
                       {category.topMetrics.map((metric, mIdx) => (
@@ -292,25 +311,59 @@ export default function Skills() {
                       ))}
                     </div>
 
-                    {/* Interactive Skill Pills */}
-                    <div className="flex flex-wrap gap-2">
-                      {category.skills.map((skill, i) => (
-                        <motion.span
-                          key={skill}
-                          initial={{ opacity: 0, scale: 0.85 }}
-                          whileInView={{ opacity: 1, scale: 1 }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.25, delay: i * 0.03 }}
-                          whileHover={{ scale: 1.06, y: -2 }}
-                          className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-slate-800 text-slate-300 text-xs font-medium transition-all cursor-default ${category.badgeHover}`}
+                    {/* Expand / Collapse Trigger Button */}
+                    <button
+                      onClick={() => toggleExpand(category.id)}
+                      aria-expanded={isExpanded}
+                      className={`w-full flex items-center justify-between px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-800/90 text-xs font-semibold transition-all cursor-pointer ${category.expandBtnHover}`}
+                    >
+                      <span>
+                        {isExpanded
+                          ? "Hide Skill Keywords"
+                          : `Explore All ${category.skills.length} Keywords`}
+                      </span>
+                      <motion.span
+                        animate={{ rotate: isExpanded ? 180 : 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        className="p-1 rounded-lg bg-slate-950/80 border border-slate-800"
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                      </motion.span>
+                    </button>
+
+                    {/* Expandable Skill Keywords Drawer */}
+                    <AnimatePresence initial={false}>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.35, ease: "easeInOut" }}
+                          className="overflow-hidden"
                         >
-                          <CircleCheck
-                            className={`w-3.5 h-3.5 ${category.checkColor} shrink-0`}
-                          />
-                          {skill}
-                        </motion.span>
-                      ))}
-                    </div>
+                          <div className="pt-4 mt-4 border-t border-slate-800/70 flex flex-wrap gap-2">
+                            {category.skills.map((skill, i) => (
+                              <motion.span
+                                key={skill}
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{
+                                  duration: 0.2,
+                                  delay: i * 0.025,
+                                }}
+                                whileHover={{ scale: 1.05, y: -2 }}
+                                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-slate-800 text-slate-300 text-xs font-medium transition-all cursor-default ${category.badgeHover}`}
+                              >
+                                <CircleCheck
+                                  className={`w-3.5 h-3.5 ${category.checkColor} shrink-0`}
+                                />
+                                {skill}
+                              </motion.span>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </motion.div>
               );
