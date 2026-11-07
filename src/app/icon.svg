@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="grad" x1="6" y1="12" x2="58" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#a855f7" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#22d3ee" />
+    </linearGradient>
+  </defs>
+
+  <!-- Dark Background -->
+  <rect width="64" height="64" rx="16" fill="#060918" />
+  <rect x="1.5" y="1.5" width="61" height="61" rx="14.5" stroke="url(#grad)" stroke-opacity="0.4" stroke-width="2" />
+
+  <!-- Left Bracket '<' -->
+  <path d="M16 24L8 32L16 40" stroke="#22d3ee" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Center 'M' -->
+  <path d="M22 42V22H26.5L32 32.5L37.5 22H42V42H38V29.5L33.5 38H30.5L26 29.5V42H22Z" fill="url(#grad)" />
+
+  <!-- Right Bracket '>' -->
+  <path d="M48 24L56 32L48 40" stroke="#a855f7" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
